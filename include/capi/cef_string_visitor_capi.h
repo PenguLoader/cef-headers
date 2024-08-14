@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2022 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -33,7 +33,7 @@
 // by hand. See the translator.README.txt file in the tools directory for
 // more information.
 //
-// $hash=30d4a63d53bce310ad641cbe5096ae126a664076$
+// $hash=3940b4c999764eae305984a16c401e302aefddc6$
 //
 
 #ifndef CEF_INCLUDE_CAPI_CEF_STRING_VISITOR_CAPI_H_
@@ -47,16 +47,16 @@ extern "C" {
 #endif
 
 ///
-// Implement this structure to receive string values asynchronously.
+/// Implement this structure to receive string values asynchronously.
 ///
 typedef struct _cef_string_visitor_t {
   ///
-  // Base structure.
+  /// Base structure.
   ///
   cef_base_ref_counted_t base;
 
   ///
-  // Method that will be executed.
+  /// Method that will be executed.
   ///
   void(CEF_CALLBACK* visit)(struct _cef_string_visitor_t* self,
                             const cef_string_t* string);

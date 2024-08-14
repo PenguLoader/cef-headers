@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2022 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -33,11 +33,11 @@
 // by hand. See the translator.README.txt file in the tools directory for
 // more information.
 //
-// $hash=273af5bd01c6ab5d4df8efb2af2b4e2da9c21760$
+// $hash=14f7f979f668fdae0f080daa39f3c1b2e92162f9$
 //
 
-#ifndef CEF_INCLUDE_CAPI_CEF_REQUEST_CALLBACK_CAPI_H_
-#define CEF_INCLUDE_CAPI_CEF_REQUEST_CALLBACK_CAPI_H_
+#ifndef CEF_INCLUDE_CAPI_CEF_I18N_UTIL_CAPI_H_
+#define CEF_INCLUDE_CAPI_CEF_I18N_UTIL_CAPI_H_
 #pragma once
 
 #include "include/capi/cef_base_capi.h"
@@ -47,28 +47,12 @@ extern "C" {
 #endif
 
 ///
-// Callback structure used for asynchronous continuation of url requests.
+/// Returns true (1) if the application text direction is right-to-left.
 ///
-typedef struct _cef_request_callback_t {
-  ///
-  // Base structure.
-  ///
-  cef_base_ref_counted_t base;
-
-  ///
-  // Continue the url request. If |allow| is true (1) the request will be
-  // continued. Otherwise, the request will be canceled.
-  ///
-  void(CEF_CALLBACK* cont)(struct _cef_request_callback_t* self, int allow);
-
-  ///
-  // Cancel the url request.
-  ///
-  void(CEF_CALLBACK* cancel)(struct _cef_request_callback_t* self);
-} cef_request_callback_t;
+CEF_EXPORT int cef_is_rtl(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif  // CEF_INCLUDE_CAPI_CEF_REQUEST_CALLBACK_CAPI_H_
+#endif  // CEF_INCLUDE_CAPI_CEF_I18N_UTIL_CAPI_H_

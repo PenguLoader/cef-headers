@@ -1,4 +1,5 @@
-// Copyright (c) 2011 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2021 Marshall A. Greenblatt. Portions copyright (c) 2015
+// Google Inc. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -26,38 +27,34 @@
 // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-// ---------------------------------------------------------------------------
-//
-// The contents of this file must follow a specific format in order to
-// support the CEF translator tool. See the translator.README.txt file in the
-// tools directory for more information.
-//
 
-#ifndef CEF_INCLUDE_CEF_REQUEST_CALLBACK_H_
-#define CEF_INCLUDE_CEF_REQUEST_CALLBACK_H_
+#ifndef INCLUDE_BASE_CEF_PTR_UTIL_H_
+#define INCLUDE_BASE_CEF_PTR_UTIL_H_
 #pragma once
 
-#include "include/cef_base.h"
+#if defined(USING_CHROMIUM_INCLUDES)
+// When building CEF include the Chromium header directly.
+#include "base/memory/ptr_util.h"
+#else  // !USING_CHROMIUM_INCLUDES
+// The following is substantially similar to the Chromium implementation.
+// If the Chromium implementation diverges the below implementation should be
+// updated to match.
+
+#include <memory>
+#include <utility>
+
+namespace base {
 
 ///
-// Callback interface used for asynchronous continuation of url requests.
+/// Helper to transfer ownership of a raw pointer to a std::unique_ptr<T>.
+/// Note that std::unique_ptr<T> has very different semantics from
+/// std::unique_ptr<T[]>: do not use this helper for array allocations.
 ///
-/*--cef(source=library)--*/
-class CefRequestCallback : public virtual CefBaseRefCounted {
- public:
-  ///
-  // Continue the url request. If |allow| is true the request will be continued.
-  // Otherwise, the request will be canceled.
-  ///
-  /*--cef(capi_name=cont)--*/
-  virtual void Continue(bool allow) = 0;
+template <typename T>
+std::unique_ptr<T> WrapUnique(T* ptr) {
+  return std::unique_ptr<T>(ptr);
+}
 
-  ///
-  // Cancel the url request.
-  ///
-  /*--cef()--*/
-  virtual void Cancel() = 0;
-};
+}  // namespace base
 
-#endif  // CEF_INCLUDE_CEF_REQUEST_CALLBACK_H_
+#endif  // INCLUDE_BASE_CEF_PTR_UTIL_H_

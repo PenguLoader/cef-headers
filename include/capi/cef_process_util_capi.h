@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2022 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -33,7 +33,7 @@
 // by hand. See the translator.README.txt file in the tools directory for
 // more information.
 //
-// $hash=c476a8d22852994d9d9695db901efaef13bbfc9d$
+// $hash=f6b215445a54f565a26f1a62d2671156635d6d46$
 //
 
 #ifndef CEF_INCLUDE_CAPI_CEF_PROCESS_UTIL_CAPI_H_
@@ -47,14 +47,14 @@ extern "C" {
 #endif
 
 ///
-// Launches the process specified via |command_line|. Returns true (1) upon
-// success. Must be called on the browser process TID_PROCESS_LAUNCHER thread.
-//
-// Unix-specific notes: - All file descriptors open in the parent process will
-// be closed in the
-//   child process except for stdin, stdout, and stderr.
-// - If the first argument on the command line does not contain a slash,
-//   PATH will be searched. (See man execvp.)
+/// Launches the process specified via |command_line|. Returns true (1) upon
+/// success. Must be called on the browser process TID_PROCESS_LAUNCHER thread.
+///
+/// Unix-specific notes: - All file descriptors open in the parent process will
+/// be closed in the
+///   child process except for stdin, stdout, and stderr.
+/// - If the first argument on the command line does not contain a slash,
+///   PATH will be searched. (See man execvp.)
 ///
 CEF_EXPORT int cef_launch_process(struct _cef_command_line_t* command_line);
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2022 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -33,7 +33,7 @@
 // by hand. See the translator.README.txt file in the tools directory for
 // more information.
 //
-// $hash=0ae1fe7f7141eb05eb7fd44c2d41e4c576afae1e$
+// $hash=0b3af613a60e4c74ec83c0bb8f5280464cbe7f48$
 //
 
 #ifndef CEF_INCLUDE_CAPI_CEF_PATH_UTIL_CAPI_H_
@@ -47,8 +47,8 @@ extern "C" {
 #endif
 
 ///
-// Retrieve the path associated with the specified |key|. Returns true (1) on
-// success. Can be called on any thread in the browser process.
+/// Retrieve the path associated with the specified |key|. Returns true (1) on
+/// success. Can be called on any thread in the browser process.
 ///
 CEF_EXPORT int cef_get_path(cef_path_key_t key, cef_string_t* path);
 
