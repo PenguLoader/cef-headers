@@ -1,0 +1,101 @@
+name: Build libcef.d.dylib stub (CEF 108, x86_64)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    env:
+      CEF_URL: 'https://cef-builds.spotifycdn.com/cef_binary_108.4.13%2Bga98cd4c%2Bchromium-108.0.5359.125_macosx64_client.tar.bz2'
+
+    steps:
+      - name: Download CEF 108 client distribution
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o cef.tar.bz2 "$CEF_URL"
+          ls -lh cef.tar.bz2
+
+      - name: Extract archive
+        run: |
+          set -euo pipefail
+          mkdir -p cef
+          tar -xjf cef.tar.bz2 -C cef --strip-components=1
+
+      - name: Locate framework binary
+        id: locate
+        run: |
+          set -euo pipefail
+          FW=$(find cef -type f -path '*Chromium Embedded Framework.framework/Chromium Embedded Framework' | head -n 1)
+          if [ -z "$FW" ]; then
+            echo "Framework binary not found"; exit 1
+          fi
+          echo "Found: $FW"
+          file "$FW"
+          # Persist with newline-safe quoting
+          {
+            echo "FW<<__EOF__"
+            echo "$FW"
+            echo "__EOF__"
+          } >> "$GITHUB_ENV"
+
+      - name: Sanity-check source exports
+        run: |
+          set -euo pipefail
+          echo "install_name:"
+          otool -D "$FW"
+          echo
+          echo "cef_v8value_create_* exports in real framework:"
+          nm -gU "$FW" | awk '$2=="T"' | grep -E '_cef_v8value_create_[a-z_]+' | sort -u
+          echo
+          nm -gU "$FW" | awk '$2=="T" && $3=="_cef_v8value_create_promise" { found=1 } END { exit !found }' \
+            || { echo "::error::cef_v8value_create_promise missing from source framework"; exit 1; }
+
+      - name: Generate stub C source
+        run: |
+          set -euo pipefail
+          mkdir -p tmp out
+          nm -gU "$FW" \
+            | awk '$2=="T" && substr($3,1,1)=="_" { print "void " substr($3,2) "() {}" }' \
+            > tmp/exports.c
+          echo "Generated $(wc -l < tmp/exports.c) stub functions"
+          head -n 5 tmp/exports.c
+          echo "..."
+          tail -n 5 tmp/exports.c
+
+      - name: Build libcef.d.dylib
+        run: |
+          set -euo pipefail
+          INSTALL_NAME=$(otool -D "$FW" | tail -n 1)
+          echo "Using install_name: $INSTALL_NAME"
+          clang -arch x86_64 -shared -dynamiclib \
+            -Wno-implicit-function-declaration \
+            -install_name "$INSTALL_NAME" \
+            -current_version 1.0.0 \
+            -compatibility_version 1.0.0 \
+            -o out/libcef.d.dylib \
+            tmp/exports.c
+
+      - name: Verify generated stub
+        run: |
+          set -euo pipefail
+          file out/libcef.d.dylib
+          ls -lh out/libcef.d.dylib
+          echo
+          echo "install_name of stub:"
+          otool -D out/libcef.d.dylib
+          echo
+          echo "cef_v8value_create_* exports in stub:"
+          nm -gU out/libcef.d.dylib | awk '$2=="T"' | grep -E '_cef_v8value_create_[a-z_]+' | sort -u
+          echo
+          nm -gU out/libcef.d.dylib | awk '$2=="T" && $3=="_cef_v8value_create_promise" { found=1 } END { exit !found }' \
+            || { echo "::error::cef_v8value_create_promise missing from stub"; exit 1; }
+          echo
+          echo "Total T exports: $(nm -gU out/libcef.d.dylib | awk '$2=="T"' | wc -l)"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: libcef.d.dylib
+          path: out/libcef.d.dylib
+          if-no-files-found: error
